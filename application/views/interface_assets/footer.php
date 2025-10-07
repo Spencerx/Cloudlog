@@ -1956,6 +1956,8 @@ $(document).ready(function() {
             });
             cat2UI($('.mode'), data.mode, false, false, () => {
                 setRst($(".mode").val());
+                // Trigger change event to notify Winkey JavaScript of mode change
+                $('#mode').trigger('change');
             });
             cat2UI($('#sat_name'), data.satname, false, false);
             cat2UI($('#sat_mode'), data.satmode, false, false);

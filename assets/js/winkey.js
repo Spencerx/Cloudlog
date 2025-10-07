@@ -1,37 +1,52 @@
-// Lets see if CW is selected
-const ModeSelected = document.getElementById('mode');
+// Wrap the initialization in DOMContentLoaded to ensure DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Lets see if CW is selected
+    const ModeSelected = document.getElementById('mode');
 
-$('#winkey_buttons').hide();
+    $('#winkey_buttons').hide();
 
-if (location.protocol !== 'https:') {
-    // Do something if the page is being served over HTTP
-    $('#winkey').hide(); // Hide the CW buttons
-}
+    if (location.protocol !== 'https:') {
+        // Do something if the page is being served over HTTP
+        $('#winkey').hide(); // Hide the CW buttons
+    }
 
-function toggleWinkeyVisibility() {
-    const winkeyElement = document.getElementById('winkey');
-    if (ModeSelected && winkeyElement) {
-        if (ModeSelected.value === 'CW') {
-            $('#winkey').show();
-        } else {
-            $('#winkey').hide();
+    function toggleWinkeyVisibility() {
+        const winkeyElement = document.getElementById('winkey');
+        if (ModeSelected && winkeyElement) {
+            if (ModeSelected.value === 'CW') {
+                $('#winkey').show();
+            } else {
+                $('#winkey').hide();
+            }
         }
     }
-}
 
-// Check initial mode
-toggleWinkeyVisibility();
+    // Check initial mode
+    toggleWinkeyVisibility();
 
-// Listen for mode changes
-if (ModeSelected) {
-    ModeSelected.addEventListener('change', toggleWinkeyVisibility);
-}
+    // Listen for mode changes
+    if (ModeSelected) {
+        ModeSelected.addEventListener('change', toggleWinkeyVisibility);
+    }
 
+    // Get other DOM elements and set up event listeners
+    sendText = document.getElementById("sendText");
+    sendButton = document.getElementById("sendButton");
+    receiveText = document.getElementById("receiveText");
+    connectButton = document.getElementById("connectButton");
+    statusBar = document.getElementById("statusBar");
 
+    //Couple the elements to the Events
+    if (connectButton) connectButton.addEventListener("click", clickConnect);
+    if (sendButton) sendButton.addEventListener("click", clickSend);
 
+    // Initialize macros
+    getMacros();
+});
+
+// Global variables
+let sendText, sendButton, receiveText, connectButton, statusBar;
 let function1Name, function1Macro, function2Name, function2Macro, function3Name, function3Macro, function4Name, function4Macro, function5Name, function5Macro;
-
-getMacros();
 
 document.addEventListener('keydown', function(event) {
 
@@ -61,17 +76,6 @@ document.addEventListener('keydown', function(event) {
     }
   });
 
-let sendText = document.getElementById("sendText");
-let sendButton = document.getElementById("sendButton");
-let receiveText = document.getElementById("receiveText");
-let connectButton = document.getElementById("connectButton");
-let statusBar = document.getElementById("statusBar");
-
-//Couple the elements to the Events
-connectButton.addEventListener("click", clickConnect)
-sendButton.addEventListener("click", clickSend)
-// statusButton.addEventListener("click", clickStatus)
-
 //When the connectButton is pressed
 async function clickConnect() {
     if (port) {
@@ -99,8 +103,8 @@ async function autoReconnect() {
             await port.open({ baudRate: 1200 });
             await port.setSignals({ dataTerminalReady: true });
 
-            statusBar.innerText = "Auto-reconnected";
-            connectButton.innerText = "Disconnect";
+            if (statusBar) statusBar.innerText = "Auto-reconnected";
+            if (connectButton) connectButton.innerText = "Disconnect";
 
             let decoder = new TextDecoderStream();
             inputDone = port.readable.pipeTo(decoder.writable);
@@ -127,13 +131,13 @@ async function autoReconnect() {
 // Call auto-reconnect when page loads
 window.addEventListener('load', autoReconnect);
 navigator.serial.addEventListener('connect', e => {
-    statusBar.innerText = `Connected to ${e.port}`;
-    connectButton.innerText = "Disconnect"
+    if (statusBar) statusBar.innerText = `Connected to ${e.port}`;
+    if (connectButton) connectButton.innerText = "Disconnect";
 });
   
 navigator.serial.addEventListener('disconnect', e => {
-    statusBar.innerText = `Disconnected`;
-    connectButton.innerText = "Connect"
+    if (statusBar) statusBar.innerText = `Disconnected`;
+    if (connectButton) connectButton.innerText = "Connect";
 });
 
 let debug              = 0;
@@ -158,8 +162,8 @@ async function connect() {
         await port.open({ baudRate: 1200 });
         await port.setSignals({ dataTerminalReady: true });
 
-        statusBar.innerText = "Connected";
-        connectButton.innerText = "Disconnect"
+        if (statusBar) statusBar.innerText = "Connected";
+        if (connectButton) connectButton.innerText = "Disconnect";
 
         let decoder = new TextDecoderStream();
         inputDone = port.readable.pipeTo(decoder.writable);
@@ -181,8 +185,8 @@ async function connect() {
         if (e == "TypeError: Cannot read property 'pipeTo' of undefined") {
             e += "\n Use Google Chrome and enable-experimental-web-platform-features"
         }
-        connectButton.innerText = "Connect"
-        statusBar.innerText = e;
+        if (connectButton) connectButton.innerText = "Connect";
+        if (statusBar) statusBar.innerText = e;
     }
 }
 
@@ -217,8 +221,8 @@ async function disconnect() {
         outputStream = null;
         outputDone = null;
     }
-    statusBar.innerText = "Disconnected";
-    connectButton.innerText = "Connect"
+    if (statusBar) statusBar.innerText = "Disconnected";
+    if (connectButton) connectButton.innerText = "Connect";
     //Close the port.
     if (port) {
         await port.close();

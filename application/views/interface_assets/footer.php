@@ -1234,16 +1234,28 @@ $(document).ready(function() {
             
             // Mode detection for WebSocket Winkey
             document.addEventListener('DOMContentLoaded', function() {
+                console.log('Winkey WebSocket: DOMContentLoaded fired');
+                
                 const ModeSelected = document.getElementById('mode');
+                const winkeyElement = document.getElementById('winkey');
+                
+                console.log('Winkey WebSocket: Mode element found:', ModeSelected);
+                console.log('Winkey WebSocket: Winkey element found:', winkeyElement);
+                console.log('Winkey WebSocket: Current mode value:', ModeSelected ? ModeSelected.value : 'N/A');
                 
                 function toggleWinkeyVisibility() {
                     const winkeyElement = document.getElementById('winkey');
                     if (ModeSelected && winkeyElement) {
+                        console.log('Winkey WebSocket: Checking mode, current value is:', ModeSelected.value);
                         if (ModeSelected.value === 'CW') {
+                            console.log('Winkey WebSocket: Mode is CW, showing winkey interface');
                             winkeyElement.style.display = 'block';
                         } else {
+                            console.log('Winkey WebSocket: Mode is not CW (' + ModeSelected.value + '), hiding winkey interface');
                             winkeyElement.style.display = 'none';
                         }
+                    } else {
+                        console.log('Winkey WebSocket: Missing elements - ModeSelected:', ModeSelected, 'winkeyElement:', winkeyElement);
                     }
                 }
                 
@@ -1253,6 +1265,9 @@ $(document).ready(function() {
                 // Listen for mode changes
                 if (ModeSelected) {
                     ModeSelected.addEventListener('change', toggleWinkeyVisibility);
+                    console.log('Winkey WebSocket: Event listener added to mode select');
+                } else {
+                    console.log('Winkey WebSocket: Could not add event listener - mode element not found');
                 }
             });
         </script>
@@ -1957,6 +1972,7 @@ $(document).ready(function() {
             cat2UI($('.mode'), data.mode, false, false, () => {
                 setRst($(".mode").val());
                 // Trigger change event to notify Winkey JavaScript of mode change
+                console.log('CAT: Mode updated to:', data.mode, 'triggering change event');
                 $('#mode').trigger('change');
             });
             cat2UI($('#sat_name'), data.satname, false, false);

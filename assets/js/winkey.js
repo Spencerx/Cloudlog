@@ -1,23 +1,31 @@
 // Wrap the initialization in DOMContentLoaded to ensure DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Winkey: DOMContentLoaded fired');
+    
     // Lets see if CW is selected
     const ModeSelected = document.getElementById('mode');
+    const winkeyElement = document.getElementById('winkey');
+    
+    console.log('Winkey: Mode element found:', ModeSelected);
+    console.log('Winkey: Winkey element found:', winkeyElement);
+    console.log('Winkey: Current mode value:', ModeSelected ? ModeSelected.value : 'N/A');
+    console.log('Winkey: Current protocol:', location.protocol);
 
     $('#winkey_buttons').hide();
-
-    if (location.protocol !== 'https:') {
-        // Do something if the page is being served over HTTP
-        $('#winkey').hide(); // Hide the CW buttons
-    }
 
     function toggleWinkeyVisibility() {
         const winkeyElement = document.getElementById('winkey');
         if (ModeSelected && winkeyElement) {
+            console.log('Winkey: Checking mode, current value is:', ModeSelected.value);
             if (ModeSelected.value === 'CW') {
+                console.log('Winkey: Mode is CW, showing winkey interface');
                 $('#winkey').show();
             } else {
+                console.log('Winkey: Mode is not CW (' + ModeSelected.value + '), hiding winkey interface');
                 $('#winkey').hide();
             }
+        } else {
+            console.log('Winkey: Missing elements - ModeSelected:', ModeSelected, 'winkeyElement:', winkeyElement);
         }
     }
 
@@ -27,6 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Listen for mode changes
     if (ModeSelected) {
         ModeSelected.addEventListener('change', toggleWinkeyVisibility);
+        console.log('Winkey: Event listener added to mode select');
+    } else {
+        console.log('Winkey: Could not add event listener - mode element not found');
     }
 
     // Get other DOM elements and set up event listeners
@@ -42,6 +53,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize macros
     getMacros();
+    
+    // Make toggleWinkeyVisibility globally accessible for debugging
+    window.debugWinkey = function() {
+        console.log('=== WINKEY DEBUG INFO ===');
+        console.log('Mode element:', document.getElementById('mode'));
+        console.log('Mode value:', document.getElementById('mode') ? document.getElementById('mode').value : 'N/A');
+        console.log('Winkey element:', document.getElementById('winkey'));
+        console.log('Winkey display style:', document.getElementById('winkey') ? document.getElementById('winkey').style.display : 'N/A');
+        console.log('Winkey computed style:', document.getElementById('winkey') ? window.getComputedStyle(document.getElementById('winkey')).display : 'N/A');
+        console.log('Winkey HTML element exists in DOM:', document.getElementById('winkey') !== null);
+        console.log('========================');
+    };
+    
+    // Make toggle function globally accessible for testing
+    window.testWinkeyToggle = function() {
+        console.log('Testing Winkey visibility toggle...');
+        toggleWinkeyVisibility();
+    };
 });
 
 // Global variables
